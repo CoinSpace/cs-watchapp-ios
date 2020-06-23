@@ -1,0 +1,5 @@
+target 'WatchAppExtension' do
+  platform :watchos, '4.3'
+  pod 'SwiftyJSON', '~> 4.0'
+  pod 'Repeat', '~> 0.5'
+end
