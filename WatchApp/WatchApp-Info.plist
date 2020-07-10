@@ -29,7 +29,5 @@
 	<string>com.coinspace.wallet</string>
 	<key>WKWatchKitApp</key>
 	<true/>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
 </dict>
 </plist>
