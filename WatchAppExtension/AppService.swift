@@ -8,6 +8,7 @@
 import WatchKit
 import Foundation
 import SwiftyJSON
+import ClockKit
 
 class AppService {
     static let sharedInstance = AppService()
