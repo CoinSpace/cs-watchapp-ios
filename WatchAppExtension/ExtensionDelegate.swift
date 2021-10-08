@@ -10,21 +10,21 @@ import SwiftyJSON
 import Repeat
 
 class ExtensionDelegate: NSObject, WKExtensionDelegate, URLSessionDownloadDelegate {
-    
+
     var timer: Repeater!
-    let tickerApiUrl = "https://coin.space/api/v1/ticker/applewatch"
+    let tickerApiUrl = "https://coin.space/api/v3/tickers/public?crypto=bitcoin@bitcoin,bitcoin-cash@bitcoin-cash,ethereum@ethereum,litecoin@litecoin"
     let backgroundInterval = 60.0
     let timerInterval = 60.0
-    
+
     let defaultSession = URLSession(configuration: URLSessionConfiguration.default)
     var dataTask: URLSessionDataTask?
-    
+
     func applicationDidFinishLaunching() {
         // Perform any final initialization of your application.
         self.timer = Repeater(interval: .seconds(self.timerInterval), mode: .infinite) { _ in
             self.loadTicker();
         }
-                        
+
         let userInfo = ["reason" : "background update"] as NSDictionary
         WKExtension.shared().scheduleBackgroundRefresh(withPreferredDate: Date(timeIntervalSinceNow: self.backgroundInterval), userInfo: userInfo) { (error: Error?) in
             if let error = error {
@@ -32,7 +32,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, URLSessionDownloadDelega
             }
         }
     }
-    
+
     func loadTicker() {
         let urlRequest = URLRequest(url: URL(string: self.tickerApiUrl)!)
         self.dataTask?.cancel()
@@ -100,7 +100,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, URLSessionDownloadDelega
             }
         }
     }
-    
+
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         let jsonString = try? String(contentsOf: location)
         if jsonString != nil {

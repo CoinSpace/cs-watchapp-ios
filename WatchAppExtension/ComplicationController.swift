@@ -14,6 +14,11 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         super.init()
     }
     
+    struct Crypto {
+        let name: String
+        let symbol: String
+    }
+    
     // MARK: - Timeline Configuration
     
     func getSupportedTimeTravelDirections(for complication: CLKComplication, withHandler handler: @escaping (CLKComplicationTimeTravelDirections) -> Void) {
@@ -39,24 +44,26 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
             return handler(nil)
         }
         
-        let cryptoSymbol: String = AppService.sharedInstance.complicationCryptoSymbol
+        let cryptoId: String = AppService.sharedInstance.complicationCryptoId
         
         switch complication.family {
             case .modularLarge:
                 let template = CLKComplicationTemplateModularLargeStandardBody()
                 
-                let headerText = self.getCryptoName(cryptoSymbol)
+                let crypto = self.getCrypto(cryptoId)
+                let headerText = crypto.name
                 template.headerTextProvider = CLKSimpleTextProvider(text: headerText)
                 
-                let priceText = AppService.sharedInstance.getPriceText(cryptoSymbol)
+                let priceText = AppService.sharedInstance.getPriceText(cryptoId)
                 
                 template.body1TextProvider = CLKSimpleTextProvider(text: priceText)
                 handler(CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template))            
             case .utilitarianLarge:
                 let template = CLKComplicationTemplateUtilitarianLargeFlat()
                 
-                let priceText = AppService.sharedInstance.getPriceText(cryptoSymbol)
-                let text = String(format:"\(cryptoSymbol): \(priceText)")
+                let crypto = self.getCrypto(cryptoId)
+                let priceText = AppService.sharedInstance.getPriceText(cryptoId)
+                let text = String(format:"\(crypto.symbol): \(priceText)")
                 
                 template.textProvider = CLKSimpleTextProvider(text: text)
                 handler(CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template))
@@ -89,19 +96,18 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
         }
     }
     
-    func getCryptoName(_ symbol: String) -> String {
-        switch symbol {
-            case "BTC":
-                return "Bitcoin"
-            case "BCH":
-                return "Bitcoin Cash"
-            case "ETH":
-                return "Ethereum"
-            case "LTC":
-                return "Litecoin"
+    func getCrypto(_ cryptoId: String) -> Crypto {
+        switch cryptoId {
+            case "bitcoin@bitcoin":
+                return Crypto(name: "Bitcoin", symbol: "BTC")
+            case "bitcoin-cash@bitcoin-cash":
+                return Crypto(name: "Bitcoin Cash", symbol: "BCH")
+            case "ethereum@ethereum":
+                return Crypto(name: "Ethereum", symbol: "ETH")
+            case "litecoin@litecoin":
+                return Crypto(name: "Litecoin", symbol: "LTC")
             default:
-                return ""
+                return Crypto(name: "", symbol: "")
         }
     }
-    
 }

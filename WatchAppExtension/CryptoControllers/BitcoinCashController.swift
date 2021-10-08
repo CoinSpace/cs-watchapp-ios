@@ -12,20 +12,20 @@ import SwiftyJSON
 class BitcoinCashController: CryptoController {
 
     @IBOutlet var priceLabel: WKInterfaceLabel!
-    let cryptoSymbol = "BCH"
+    let cryptoId = "bitcoin-cash@bitcoin-cash"
     
     override func awake(withContext context: Any?) {
         super.awake(withContext: context)
     }
     
     override func updatePriceLabel() {
-        self.priceLabel.setText(AppService.sharedInstance.getPriceText(cryptoSymbol))
+        self.priceLabel.setText(AppService.sharedInstance.getPriceText(cryptoId))
     }
     
     @IBAction func buttonClick() {
         let message = "Display Bitcoin Cash price on the watch face?"
         let action = WKAlertAction(title: "OK", style: WKAlertActionStyle.default, handler: { () -> Void in
-            AppService.sharedInstance.setComplicationCryptoSymbol(self.cryptoSymbol)
+            AppService.sharedInstance.setComplicationCryptoId(self.cryptoId)
         })
         self.presentAlert(withTitle: "", message: message, preferredStyle: WKAlertControllerStyle.actionSheet, actions: [action])
     }

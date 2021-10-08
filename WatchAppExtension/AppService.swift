@@ -14,11 +14,11 @@ class AppService {
     static let sharedInstance = AppService()
     var ticker: JSON!
     var currencySymbol: String!
-    var complicationCryptoSymbol: String!
+    var complicationCryptoId: String!
 
     init() {
         currencySymbol = UserDefaults.standard.string(forKey: "currencySymbol") ?? "USD"
-        complicationCryptoSymbol = UserDefaults.standard.string(forKey: "cryptoSymbol") ?? "BTC"
+        complicationCryptoId = UserDefaults.standard.string(forKey: "cryptoId") ?? "bitcoin@bitcoin"
     }
 
     func setTicker(_ ticker: JSON!) {
@@ -33,16 +33,23 @@ class AppService {
         self.refreshComplicationInfo()
     }
 
-    func getPriceText(_ cryptoSymbol: String) -> String {
+    func getPriceText(_ cryptoId: String) -> String {
         if ticker == nil {
             return "Loading..."
         }
-        return String(format:"%.2f \(currencySymbol!)", ticker[cryptoSymbol][currencySymbol].doubleValue)
+        var cryptoTicker: JSON!
+        for (_, subJson):(String, JSON) in ticker {
+            if (subJson["_id"].string == cryptoId) {
+                cryptoTicker = subJson
+                break
+            }
+        }
+        return String(format:"%.2f \(currencySymbol!)", cryptoTicker["prices"][currencySymbol].doubleValue)
     }
 
-    func setComplicationCryptoSymbol(_ cryptoSymbol: String) {
-        UserDefaults.standard.set(cryptoSymbol, forKey: "cryptoSymbol")
-        self.complicationCryptoSymbol = cryptoSymbol
+    func setComplicationCryptoId(_ cryptoId: String) {
+        UserDefaults.standard.set(cryptoId, forKey: "cryptoId")
+        self.complicationCryptoId = cryptoId
         self.refreshComplicationInfo()
     }
 
