@@ -1,5 +1,5 @@
-# CS-WATCHAPP-IOS
+# cs-watchapp-ios
 
 [![License](https://img.shields.io/github/license/CoinSpace/cs-watchapp-ios?color=blue)](https://github.com/CoinSpace/cs-watchapp-ios/blob/master/LICENSE)
 
-Coin Wallet watch app ios extension.
+Watch App iOS extension for [Coin Wallet](https://github.com/CoinSpace/CoinSpace).
