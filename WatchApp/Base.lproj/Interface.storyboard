@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="16097" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="22155" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
     <device id="watch38"/>
     <dependencies>
-        <deployment identifier="watchOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="16012"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="22022"/>
     </dependencies>
     <scenes>
         <!--Bitcoin Controller-->
@@ -15,7 +13,7 @@
                         <button alignment="left" id="HUN-KP-Pd5">
                             <group key="contentGroup" width="1" height="1" alignment="left" layout="vertical" id="axX-Ph-P7C">
                                 <items>
-                                    <imageView width="1" alignment="left" image="logo" id="MLS-XM-FuR"/>
+                                    <imageView alignment="left" image="logo" id="MLS-XM-FuR"/>
                                     <label width="1" alignment="center" verticalAlignment="center" text="Bitcoin" textAlignment="center" id="upC-Tw-1gC">
                                         <fontDescription key="font" type="system" pointSize="24"/>
                                     </label>
@@ -35,7 +33,7 @@
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="219" y="344"/>
+            <point key="canvasLocation" x="140" y="294"/>
         </scene>
         <!--Bitcoin Cash Controller-->
         <scene sceneID="Igw-Ra-QQ3">
@@ -45,7 +43,7 @@
                         <button alignment="left" id="Cvx-BL-iUm">
                             <group key="contentGroup" width="1" height="1" alignment="left" layout="vertical" id="Gx6-fc-leS">
                                 <items>
-                                    <imageView width="1" alignment="left" image="logo" id="A0f-rn-89d"/>
+                                    <imageView alignment="left" image="logo" id="A0f-rn-89d"/>
                                     <label width="1" alignment="center" verticalAlignment="center" text="Bitcoin Cash" textAlignment="center" id="fcg-NX-Z99">
                                         <fontDescription key="font" type="system" pointSize="24"/>
                                     </label>
@@ -75,7 +73,7 @@
                         <button alignment="left" id="xF8-VL-ze6">
                             <group key="contentGroup" width="1" height="1" alignment="left" layout="vertical" id="fCe-OA-1td">
                                 <items>
-                                    <imageView width="1" alignment="left" image="logo" id="8J6-tG-Krg"/>
+                                    <imageView alignment="left" image="logo" id="8J6-tG-Krg"/>
                                     <label width="1" alignment="center" verticalAlignment="center" text="Ethereum" textAlignment="center" id="qkE-q0-AhA">
                                         <fontDescription key="font" type="system" pointSize="24"/>
                                     </label>
@@ -105,7 +103,7 @@
                         <button alignment="left" id="814-Nq-e4F">
                             <group key="contentGroup" width="1" height="1" alignment="left" layout="vertical" id="PuA-z4-hF1">
                                 <items>
-                                    <imageView width="1" alignment="left" image="logo" id="hGn-Zr-1xG"/>
+                                    <imageView alignment="left" image="logo" id="hGn-Zr-1xG"/>
                                     <label width="1" alignment="center" verticalAlignment="center" text="Litecoin" textAlignment="center" id="3lc-th-hn0">
                                         <fontDescription key="font" type="system" pointSize="24"/>
                                     </label>
@@ -134,7 +132,7 @@
                     <items>
                         <group width="1" height="1" alignment="left" verticalAlignment="center" layout="vertical" id="PXh-Qz-p68">
                             <items>
-                                <imageView width="1" alignment="left" image="logo" id="7Gv-Ub-3k4"/>
+                                <imageView alignment="left" image="logo" id="7Gv-Ub-3k4"/>
                                 <group width="1" alignment="left" verticalAlignment="center" spacing="3" id="XzD-ra-2Sa">
                                     <items>
                                         <label alignment="left" text="Currency:" id="c7l-8X-U6h"/>
@@ -178,7 +176,7 @@
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="1277" y="690"/>
+            <point key="canvasLocation" x="1260" y="851"/>
         </scene>
         <!--Static Notification Interface Controller-->
         <scene sceneID="AEw-b0-oYE">

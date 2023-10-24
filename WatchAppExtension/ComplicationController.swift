@@ -57,7 +57,21 @@ class ComplicationController: NSObject, CLKComplicationDataSource {
                 let priceText = AppService.sharedInstance.getPriceText(cryptoId)
                 
                 template.body1TextProvider = CLKSimpleTextProvider(text: priceText)
-                handler(CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template))            
+                handler(CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template))
+            
+            
+            case .graphicRectangular:
+                let template = CLKComplicationTemplateGraphicRectangularStandardBody()
+                
+                let crypto = self.getCrypto(cryptoId)
+                let headerText = crypto.name
+                template.headerTextProvider = CLKSimpleTextProvider(text: headerText)
+                
+                let priceText = AppService.sharedInstance.getPriceText(cryptoId)
+                
+                template.body1TextProvider = CLKSimpleTextProvider(text: priceText)
+                handler(CLKComplicationTimelineEntry(date: Date(), complicationTemplate: template))
+            
             case .utilitarianLarge:
                 let template = CLKComplicationTemplateUtilitarianLargeFlat()
                 
