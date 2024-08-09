@@ -12,7 +12,7 @@ import Repeat
 class ExtensionDelegate: NSObject, WKExtensionDelegate, URLSessionDownloadDelegate {
 
     var timer: Repeater!
-    let tickerApiUrl = "https://coin.space/api/v3/tickers/public?crypto=bitcoin@bitcoin,bitcoin-cash@bitcoin-cash,ethereum@ethereum,litecoin@litecoin"
+    let tickerApiUrl = "https://price.coin.space/api/v1/prices/public?cryptoIds=bitcoin@bitcoin,bitcoin-cash@bitcoin-cash,ethereum@ethereum,litecoin@litecoin&fiat="
     let backgroundInterval = 60.0
     let timerInterval = 60.0
 
@@ -34,7 +34,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, URLSessionDownloadDelega
     }
 
     func loadTicker() {
-        let urlRequest = URLRequest(url: URL(string: self.tickerApiUrl)!)
+        let urlRequest = URLRequest(url: URL(string: self.tickerApiUrl + AppService.sharedInstance.currencySymbol)!)
         self.dataTask?.cancel()
         self.dataTask = defaultSession.dataTask(with: urlRequest, completionHandler: { (data, response, error) in
             defer { self.dataTask = nil }

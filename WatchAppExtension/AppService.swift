@@ -1,5 +1,5 @@
 //
-//  TickerService.swift
+//  AppService.swift
 //  CoinSpace WatchApp Extension
 //
 //  Created by Nikita Verkhovin on 27.03.2020.
@@ -39,12 +39,12 @@ class AppService {
         }
         var cryptoTicker: JSON!
         for (_, subJson):(String, JSON) in ticker {
-            if (subJson["_id"].string == cryptoId) {
+            if (subJson["cryptoId"].string == cryptoId) {
                 cryptoTicker = subJson
                 break
             }
         }
-        return String(format:"%.2f \(currencySymbol!)", cryptoTicker["prices"][currencySymbol].doubleValue)
+        return String(format:"%.2f \(currencySymbol!)", cryptoTicker["price"].doubleValue)
     }
 
     func setComplicationCryptoId(_ cryptoId: String) {

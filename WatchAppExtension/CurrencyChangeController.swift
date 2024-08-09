@@ -41,11 +41,6 @@ class CurrencyChangeController: WKInterfaceController {
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
         super.willActivate()
-    }
-
-    override func didAppear() {
-        super.didAppear()
-
         let currencySymbol: String = AppService.sharedInstance.currencySymbol
         self.selectedIndex = currencyList.index(of: currencySymbol)!
         self.currencyPicker.setSelectedItemIndex(self.selectedIndex)
@@ -62,6 +57,8 @@ class CurrencyChangeController: WKInterfaceController {
     @IBAction func confirm() {
         let currencySymbol = currencyList[self.selectedIndex]
         AppService.sharedInstance.setCurrencySymbol(currencySymbol)
+        let extensionDelegate = WKExtension.shared().delegate as! ExtensionDelegate
+        extensionDelegate.loadTicker()
         self.dismiss()
     }
 
