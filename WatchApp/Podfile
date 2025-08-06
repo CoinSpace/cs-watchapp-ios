@@ -1,0 +1,3 @@
+target 'WatchApp' do
+  pod 'SDWebImage', '~> 5.21.1'
+end
