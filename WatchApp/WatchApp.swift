@@ -4,7 +4,7 @@ import SwiftUI
 struct WatchApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
         }
     }
 }

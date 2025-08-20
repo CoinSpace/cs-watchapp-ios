@@ -37,50 +37,95 @@ struct AppColors {
     static let textColor = Color("TextColor")
 }
 
-struct CryptoListItem: View {
+struct CryptoLogo: View {
+    @State private var _date: Date?
+    let image: UIImage?
+    var date: Date?
+    let size: CGFloat = 30
+    
     var body: some View {
-        VStack(spacing: 8) {
-            HStack(alignment: .top) {
-                Circle().fill(.orange)
-                    .frame(width: 30, height: 30)
-                Spacer()
-                Text("+3.43%")
-                    .setFontStyle(AppFonts.textXsBold)
-                    .foregroundColor(AppColors.primary)
+        ZStack {
+            if let uiImage = image {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .id(_date)
+                    .transition(
+                        .asymmetric(
+                            insertion: .opacity,
+                            removal: .opacity.combined(with: .scale(scale: 12))
+                        )
+                    )
+            } else {
+                ProgressView()
             }
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Bitcoin")
-                    .setFontStyle(AppFonts.textMd)
-                    .foregroundColor(AppColors.textColor)
-                Text("$1,938,638.36")
-                    .setFontStyle(AppFonts.textMdBold)
-                    .foregroundColor(AppColors.textColor)
-            }.frame(
-                maxWidth: .infinity,
-                alignment: .leading
-            )
         }
-        .listRowInsets(.init(top: 8, leading: 8, bottom: 8, trailing: 8))
+        .onChange(of: date) {
+            withAnimation {
+                _date = date
+            }
+        }
+        .frame(width: size, height: size)
     }
 }
 
-struct CryptoAddListItem: View {
+struct PriceView: View {
+    let ticker: TickerCodable?
+    let currency: Currency
+    let fontStyle: FontStyle
+    
+    @State private var price: Double?
+    
     var body: some View {
-        HStack(spacing: 8) {
-            Circle().fill(.orange)
-                .frame(width: 30, height: 30)
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Ethereum")
-                    .setFontStyle(AppFonts.textMdBold)
-                    .foregroundColor(AppColors.textColor)
-                Text("ETH")
-                    .setFontStyle(AppFonts.textSm)
-                    .foregroundColor(AppColors.textColor)
-            }.frame(
-                maxWidth: .infinity,
-                alignment: .leading
-            )
+        ZStack() {
+            let delta = ticker?.delta ?? 0
+            let changeColor = delta > 0 ? AppColors.primary : AppColors.danger
+            let color = delta == 0 ? AppColors.textColor : changeColor
+            
+            PriceText
+                .foregroundColor(color)
+                .transition(.identity)
+            PriceText
+                .foregroundColor(AppColors.textColor)
+                .transition(
+                        .asymmetric(
+                            insertion: .opacity,
+                            removal: .identity
+                        )
+                )
         }
-        .listRowInsets(.init(top: 8, leading: 8, bottom: 8, trailing: 8))
+        .onChange(of: ticker?.price) {
+            withAnimation(.timingCurve(0, 0, 1, -1, duration: 0.7)) {
+                price = ticker?.price
+            }
+        }
+    }
+    
+    private var PriceText: some View {
+        let text: Text
+        if let price = ticker?.price {
+            text = Text(AppService.shared.formatFiat(price, currency.rawValue, true))
+        } else {
+            text = Text(verbatim: "...")
+        }
+        return text
+            .setFontStyle(fontStyle)
+            .id(price)
+    }
+}
+
+struct PriceChangeView: View {
+    let ticker: TickerCodable?
+    
+    var body: some View {
+        let text: Text
+        if let priceChange = ticker?.price_change_1d {
+            text = Text(String(format: "%+.2f%%", priceChange))
+                .foregroundColor(priceChange >= 0 ? AppColors.primary : AppColors.danger)
+        } else {
+            text = Text(verbatim: "...")
+        }
+        return text
+            .setFontStyle(AppFonts.textXsBold)
     }
 }
