@@ -73,6 +73,7 @@ struct PriceView: View {
     let ticker: TickerCodable?
     let currency: Currency
     let fontStyle: FontStyle
+    var customFractionDigits = true
     
     @State private var price: Double?
     
@@ -104,7 +105,7 @@ struct PriceView: View {
     private var PriceText: some View {
         let text: Text
         if let price = ticker?.price {
-            text = Text(AppService.shared.formatFiat(price, currency.rawValue, true))
+            text = Text(AppService.shared.formatFiat(price, currency.rawValue, customFractionDigits))
         } else {
             text = Text(verbatim: "...")
         }

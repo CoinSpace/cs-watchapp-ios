@@ -5,7 +5,7 @@ import SwiftUI
 class SettingsModel {
     static let shared = SettingsModel()
     
-    var cryptos: [CryptoItem] = []
+    var cryptos: [CryptoItem] = [CryptoItem(crypto: .bitcoin)]
     var isLoading: Bool = true
     
     private init() {
@@ -15,7 +15,7 @@ class SettingsModel {
     func loadCryptos() {
         Task {
             if let data = UserDefaults.standard.data(forKey: "cryptos"),
-               let decoded = try? JSONDecoder().decode([CryptoItem].self,from: data) {
+               let decoded = try? JSONDecoder().decode([CryptoItem].self, from: data) {
                 self.cryptos = decoded
             }
             self.isLoading = false

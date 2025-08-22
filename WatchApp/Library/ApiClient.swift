@@ -39,7 +39,6 @@ actor ApiClient {
         for chunk in chunks {
             let url = "\(API_PRICE_URL)api/v1/prices/public?fiat=\(fiat)&cryptoIds=\(chunk.joined(separator: ","))"
             let tickers: [TickerCodable] = try await self.call(url, ttl: 60)
-//            let tickers: [TickerCodable] = try await self.call(url, ttl: 1)
             allTickers.append(contentsOf: tickers)
         }
         
@@ -57,9 +56,6 @@ actor ApiClient {
         
         return cryptoIds.compactMap { cryptoId in
             var ticker = allTickers.first(where: { $0.cryptoId == cryptoId })
-            // TODO: DEBUG
-//            ticker?.price = Double(Int.random(in: -100000...100000))
-//            ticker?.price_change_1d = Double.random(in: -100...100)
             if let oldTicker = oldTickers.first(where: { $0.cryptoId == cryptoId }), let price = ticker?.price {
                 ticker?.delta = price - oldTicker.price
             }
@@ -138,10 +134,8 @@ struct CryptoCodable: Codable, CryptoDisplayable {
 
 struct TickerCodable: Codable {
     let cryptoId: String
-//    let price: Double
-    var price: Double
-//    let price_change_1d: Double?
-    var price_change_1d: Double?
+    let price: Double
+    let price_change_1d: Double?
     
     enum CodingKeys: String, CodingKey {
         case cryptoId, price, price_change_1d

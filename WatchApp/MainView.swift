@@ -1,20 +1,9 @@
 import SwiftUI
-
-import AppIntents
+import WatchConnectivity
 
 enum Route: Hashable {
     case portfolio
     case add
-}
-
-struct Reload: AppIntent {
-    
-    static var title: LocalizedStringResource = "Reload"
-    
-    func perform() async throws -> some IntentResult {
-        print("reload")
-        return .result()
-    }
 }
 
 struct MainView: View {
@@ -23,7 +12,18 @@ struct MainView: View {
     @State private var scrollToTopTrigger = UUID()
     @State private var reloadTrigger = UUID()
     
+    private let delegate: WCSessionDelegate
+    private var session: WCSession
+    
     @Environment(\.scenePhase) private var scenePhase
+    
+    init(session: WCSession = .default) {
+        self.delegate = SessionDelegater()
+        self.session = session
+        self.session.delegate = self.delegate
+        self.session.activate()
+        _ = PortfolioModel.shared
+    }
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -31,35 +31,39 @@ struct MainView: View {
                 if SettingsModel.shared.isLoading {
                     ProgressView()
                 } else {
-                    ScrollViewReader { proxy in
-                        List {
-                            EmptyView().id("top")
-                            ForEach(SettingsModel.shared.cryptos, id: \.id) { item in
-                                CryptoListItem(cryptoItem: item) {
-                                    await SettingsModel.shared.loadPrice(for: item, forceAnimation: true)
-                                }
-                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                    Button {
-                                        delete(item)
-                                    } label: {
-                                        Label("Delete", systemImage: "xmark")
+                    if SettingsModel.shared.cryptos.isEmpty {
+                        Text("No cryptos").setFontStyle(AppFonts.textMd)
+                    } else {
+                        ScrollViewReader { proxy in
+                            List {
+                                EmptyView().id("top")
+                                ForEach(SettingsModel.shared.cryptos, id: \.id) { item in
+                                    CryptoListItem(cryptoItem: item) {
+                                        await SettingsModel.shared.loadPrice(for: item, forceAnimation: true)
                                     }
-                                    Button {
-                                        showOptions(item)
-                                    } label: {
-                                        Label("Options", systemImage: "ellipsis")
+                                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                        Button {
+                                            delete(item)
+                                        } label: {
+                                            Label("Delete", systemImage: "xmark")
+                                        }
+                                        Button {
+                                            showOptions(item)
+                                        } label: {
+                                            Label("Options", systemImage: "ellipsis")
+                                        }
+                                    }
+                                    .id(item.id.uuidString + reloadTrigger.uuidString)
+                                    .task {
+                                        await SettingsModel.shared.loadLogo(for: item)
+                                        await SettingsModel.shared.loadPrice(for: item)
                                     }
                                 }
-                                .id(item.id.uuidString + reloadTrigger.uuidString)
-                                .task {
-                                    await SettingsModel.shared.loadLogo(for: item)
-                                    await SettingsModel.shared.loadPrice(for: item)
-                                }
+                                .onMove(perform: move)
                             }
-                            .onMove(perform: move)
-                        }
-                        .onChange(of: scrollToTopTrigger) {
-                            proxy.scrollTo("top", anchor: .top)
+                            .onChange(of: scrollToTopTrigger) {
+                                proxy.scrollTo("top", anchor: .top)
+                            }
                         }
                     }
                 }
@@ -156,6 +160,18 @@ struct CryptoListItem: View {
         .listRowBackground(clipShape.fill(.background.secondary))
         .clipShape(clipShape)
         .listRowInsets(EdgeInsets())
+    }
+}
+
+class SessionDelegater: NSObject, WCSessionDelegate {
+    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: (any Error)?) {}
+
+    func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        if let data = applicationContext["data"] as? String {
+            Task { @MainActor in
+                PortfolioModel.shared.updatePortfolio(data: data)
+            }
+        }
     }
 }
 

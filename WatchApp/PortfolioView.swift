@@ -17,9 +17,10 @@ struct PortfolioView: View {
                 ProgressView()
             } else {
                 List {
-                    if let portfolio = PortfolioModel.shared.portfolio {
+                    let portfolio = PortfolioModel.shared.portfolio
+                    if portfolio.isLogged {
                         PortfolioListItem(portfolio: portfolio) {
-                                    await PortfolioModel.shared.loadPrice(for: portfolio, forceAnimation: true)
+                                    await PortfolioModel.shared.loadPrice(forceAnimation: true)
                             }
                             .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                                 Button {
@@ -30,7 +31,7 @@ struct PortfolioView: View {
                             }
                             .id(portfolio.id.uuidString + reloadTrigger.uuidString)
                             .task {
-                                await PortfolioModel.shared.loadPrice(for: portfolio)
+                                await PortfolioModel.shared.loadPrice()
                             }
                     } else {
                         PortfolioListItem() {
@@ -46,7 +47,7 @@ struct PortfolioView: View {
         }
         .sheet(item: $selectedItem) { item in
             CurrencyPickerView(selectedCurrency: item.currency, onSelect: { currency in
-                PortfolioModel.shared.updateCurrency(for: item, with: currency)
+                PortfolioModel.shared.updateCurrency(with: currency)
             })
         }
         .onChange(of: scenePhase) {
@@ -90,8 +91,12 @@ struct PortfolioListItem: View {
                         .setFontStyle(AppFonts.textMd)
                         .foregroundColor(AppColors.textColor)
                     if let portfolio = portfolio {
-                        PriceView(ticker: portfolio.total, currency: portfolio.currency, fontStyle: AppFonts.textMdBold)
-                            .foregroundColor(AppColors.textColor)
+                        PriceView(
+                            ticker: portfolio.total,
+                            currency: portfolio.currency,
+                            fontStyle: AppFonts.textMdBold,
+                            customFractionDigits: false
+                        ).foregroundColor(AppColors.textColor)
                     } else {
                         Text("Sign In")
                             .setFontStyle(AppFonts.textMdBold)
