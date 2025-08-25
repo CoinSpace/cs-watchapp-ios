@@ -124,7 +124,7 @@ struct CryptoCodable: Codable, CryptoDisplayable {
     
     var image: UIImage?
     
-    static let bitcoin = CryptoCodable(asset: "bitcoin", _id: "bitcoin@bitcoin", type: "coin", name: "Bitcoin", symbol: "BTC", deprecated: false, image: UIImage(named: "Bitcoin"))
+    static let bitcoin = CryptoCodable(asset: "bitcoin", _id: "bitcoin@bitcoin", type: "coin", name: "Bitcoin", symbol: "BTC", deprecated: false, logo: "bitcoin.png", image: UIImage(named: "Bitcoin"))
     
     static func loadImage(_ item: CryptoCodable) async -> UIImage? {
         let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!

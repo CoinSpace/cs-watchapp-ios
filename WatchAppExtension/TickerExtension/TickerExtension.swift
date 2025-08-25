@@ -6,82 +6,85 @@ struct TickerProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> TickerTimelineEntry {
         print("placeholder")
         let now = Date()
-//        return TickerTimelineEntry(date: now, configuration: TickerConfiguration.defaultConfiguration, ticker: TickerCodable.bitcoin)
-        return TickerTimelineEntry(date: now, configuration: TickerConfiguration.defaultConfiguration)
+        return TickerTimelineEntry(date: now, cryptoItem: CryptoItem(crypto: .bitcoin))
     }
 
     func snapshot(for configuration: TickerConfiguration, in context: Context) async -> TickerTimelineEntry {
         print("snapshot")
-//        var ticker: TickerCodable?
-//        do {
-//            ticker = try await ApiClient.shared.prices([configuration.crypto.cryptoId], configuration.currency.rawValue).first
-//        } catch {}
+        var cryptoItem = configuration.getCryptoItem()
+        do {
+            cryptoItem.ticker = try await ApiClient.shared.prices([cryptoItem.crypto._id], cryptoItem.currency.rawValue).first
+        } catch {}
         let now = Date()
-//        return TickerTimelineEntry(date: now, configuration: configuration, ticker: ticker)
-        return TickerTimelineEntry(date: now, configuration: configuration)
+        return TickerTimelineEntry(date: now, cryptoItem: cryptoItem)
     }
 
     func timeline(for configuration: TickerConfiguration, in context: Context) async -> Timeline<TickerTimelineEntry> {
-//        print("timeline")
-//        var ticker: TickerCodable?
-//        do {
-//            ticker = try await ApiClient.shared.prices([configuration.crypto.cryptoId], configuration.currency.rawValue).first
-//        } catch {}
-//
+        print("timeline")
+        var cryptoItem = configuration.getCryptoItem()
+        do {
+            cryptoItem.ticker = try await ApiClient.shared.prices([cryptoItem.crypto._id], cryptoItem.currency.rawValue).first
+        } catch {}
         let now = Date()
-//        let entry = TickerTimelineEntry(date: now, configuration: configuration, ticker: ticker)
-        let entry = TickerTimelineEntry(date: now, configuration: configuration)
+        let entry = TickerTimelineEntry(date: now, cryptoItem: cryptoItem)
         let timeline = Timeline(entries: [entry], policy: .after(now.addingTimeInterval(300))) // 5 min
+        
         return timeline
     }
 
-//    func recommendations() -> [AppIntentRecommendation<TickerConfiguration>] {
-//        return []
-//    }
-    
     func recommendations() -> [AppIntentRecommendation<TickerConfiguration>] {
-        var recs = [AppIntentRecommendation<TickerConfiguration>]()
-
-//          for backyard in Backyard.allBackyards(modelContext: modelContext) {
-            let configIntent = TickerConfiguration()
-//        configIntent.emoji = "11"
-        
-            let configIntent2 = TickerConfiguration()
-//        configIntent.emoji = "22"
-//            configIntent.backyardID = backyard.id.uuidString
-        let gardenRecommendation = AppIntentRecommendation(intent: configIntent, description: "11")
-        let gardenRecommendation2 = AppIntentRecommendation(intent: configIntent2, description: "22")
-        recs.append(gardenRecommendation)
-        recs.append(gardenRecommendation2)
-//          }
-
-      return recs
+        return TickerConfiguration.getRecommendations()
     }
-
 }
 
 struct TickerTimelineEntry: TimelineEntry {
     let date: Date
-    let configuration: TickerConfiguration
-//    let ticker: TickerCodable?
+    let cryptoItem: CryptoItem
 }
 
 struct TickerExtensionEntryView: View {
     var entry: TickerProvider.Entry
+    
+    @Environment(\.widgetFamily) var family
 
-//    @Environment(\.widgetFamily) var family
-//    @Environment(\.colorScheme) var colorScheme
-//    @Environment(\.widgetContentMargins) var widgetContentMargins
-
+    @ViewBuilder
     var body: some View {
-        VStack {
-            HStack {
-                Text("Time111:")
-                Text(entry.date, style: .time)
-            }
-            Text("Emoji:")
+        switch family {
+        case .accessoryCorner:
+            TickerCornerView(entry: entry)
+        default:
+            Text("404")
         }
     }
+}
+
+struct TickerCornerView: View {
+    let entry: TickerProvider.Entry
+    
+    var body: some View {
+        Text(entry.cryptoItem.crypto.symbol)
+            .font(.callout)
+            .widgetCurvesContent()
+            .widgetLabel {
+                if let price = entry.cryptoItem.ticker?.price {
+                    Text(AppService.shared.formatFiat(price, entry.cryptoItem.currency.rawValue, true))
+                } else {
+                    Text(verbatim: "...")
+                }
+            }
+    }
+}
+
+struct TickerCircularView: View {
+    var body: some View {}
+}
+
+struct TickerInlineView: View {
+    var body: some View {}
+}
+
+struct TickerRectangularView: View {
+    var body: some View {}
 }
 
 struct TickerExtension: Widget {
@@ -93,18 +96,19 @@ struct TickerExtension: Widget {
             intent: TickerConfiguration.self,
             provider: TickerProvider()) { entry in
             TickerExtensionEntryView(entry: entry)
-                .containerBackground(for: .widget) { Color.red }
-//                    .containerBackground(Color(.red), for: .widget)
+                    .containerBackground(.background.secondary, for: .widget)
+                    .widgetURL(URL(string: "watchapp://main"))
         }
         .configurationDisplayName("Ticker")
         .description("Live price for selected crypto.")
-        .supportedFamilies([.accessoryCorner, .accessoryCircular, .accessoryInline, .accessoryRectangular])
+//        .supportedFamilies([.accessoryCorner, .accessoryCircular, .accessoryInline, .accessoryRectangular])
+        .supportedFamilies([.accessoryCorner, .accessoryRectangular])
         .contentMarginsDisabled()
     }
 }
 
-#Preview(as: .accessoryRectangular) {
+#Preview(as: .accessoryCorner) {
     TickerExtension()
 } timeline: {
-    TickerTimelineEntry(date: .now, configuration: TickerConfiguration.defaultConfiguration)
+    TickerTimelineEntry(date: .now, cryptoItem: CryptoItem(crypto: .bitcoin))
 }

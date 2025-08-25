@@ -108,6 +108,9 @@ struct MainView: View {
                 }
             }
         }
+        .onOpenURL { url in
+            handleIncomingURL(url)
+        }
     }
     
     func delete(_ item: CryptoItem) {
@@ -120,6 +123,17 @@ struct MainView: View {
 
     func showOptions(_ item: CryptoItem) {
         selectedItem = item
+    }
+    
+    func handleIncomingURL(_ url: URL) {
+        guard let host = url.host else { return }
+        path = NavigationPath()
+        switch host {
+        case "portfolio":
+            path.append(Route.portfolio)
+        default:
+            break
+        }
     }
 }
 

@@ -1,4 +1,5 @@
 import SwiftUI
+import WidgetKit
 
 @MainActor
 @Observable
@@ -8,27 +9,37 @@ class SettingsModel {
     var cryptos: [CryptoItem] = [CryptoItem(crypto: .bitcoin)]
     var isLoading: Bool = true
     
+    private let suiteName = "group.com.coinspace.shared"
+    private let userDefaultsKey = "watchapp.cryptos"
+    
     private init() {
         loadCryptos()
     }
     
     func loadCryptos() {
         Task {
-            if let data = UserDefaults.standard.data(forKey: "cryptos"),
+            if let defaults = UserDefaults(suiteName: suiteName),
+               let data = defaults.data(forKey: userDefaultsKey),
                let decoded = try? JSONDecoder().decode([CryptoItem].self, from: data) {
                 self.cryptos = decoded
+            } else {
+                saveCryptos()
             }
             self.isLoading = false
         }
     }
         
     func saveCryptos() {
-        if let encoded = try? JSONEncoder().encode(cryptos) {
-            UserDefaults.standard.set(encoded, forKey: "cryptos")
+        if let encoded = try? JSONEncoder().encode(cryptos),
+           let defaults = UserDefaults(suiteName: suiteName) {
+            defaults.set(encoded, forKey: userDefaultsKey)
+            WidgetCenter.shared.invalidateConfigurationRecommendations()
+            WidgetCenter.shared.reloadTimelines(ofKind: "TickerExtension")
         }
     }
     
     func addCrypto(_ item: CryptoItem) {
+        guard !SettingsModel.shared.cryptos.contains(where: { $0.crypto.asset == item.crypto.asset }) else { return }
         self.cryptos.insert(item, at: 0)
         self.saveCryptos()
     }
@@ -71,12 +82,4 @@ class SettingsModel {
         guard let index = cryptos.firstIndex(where: { $0.id == item.id }) else { return }
         cryptos[index].crypto.image = image
     }
-}
-
-struct CryptoItem: Identifiable, Codable {
-    var id = UUID()
-    var crypto: CryptoCodable
-    var ticker: TickerCodable?
-    var currency: Currency = .USD
-    var date = Date()
 }
