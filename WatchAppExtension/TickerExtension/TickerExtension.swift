@@ -55,71 +55,12 @@ struct TickerExtensionEntryView: View {
             TickerCircularView(entry: entry)
         case .accessoryInline:
             TickerInlineView(entry: entry)
+        case .accessoryRectangular:
+            TickerRectangularView(entry: entry)
         default:
-            Text("404")
+            Text(verbatim: "404")
         }
     }
-}
-
-struct TickerCornerView: View {
-    let entry: TickerProvider.Entry
-    
-    var body: some View {
-        Text(entry.cryptoItem.crypto.symbol)
-            .widgetCurvesContent()
-            .widgetLabel {
-                if let price = entry.cryptoItem.ticker?.price {
-                    Text(AppService.shared.formatFiat(price, entry.cryptoItem.currency.rawValue, true))
-                        .setPriceChangeColor(entry.cryptoItem)
-                } else {
-                    Text(verbatim: "...")
-                }
-            }
-    }
-}
-
-struct TickerCircularView: View {
-    let entry: TickerProvider.Entry
-    
-    var body: some View {
-        ZStack {
-            AccessoryWidgetBackground()
-            VStack(spacing: -6) {
-                Text(entry.cryptoItem.crypto.symbol)
-                    .setFontStyle(AppFonts.textXsBold)
-                    .minimumScaleFactor(0.9)
-                PriceText
-                    .setFontStyle(AppFonts.textXsBold)
-                    .minimumScaleFactor(0.7)
-            }.padding(.horizontal, 2)
-        }
-    }
-    
-    private var PriceText: Text {
-        let text: Text
-        if let priceChange = entry.cryptoItem.ticker?.price_change_1d {
-            text = Text(String(format: "%+.1f%%", priceChange))
-        } else {
-            text = Text(verbatim: "...")
-        }
-        return text.setPriceChangeColor(entry.cryptoItem)
-    }
-}
-
-struct TickerInlineView: View {
-    let entry: TickerProvider.Entry
-    
-    var body: some View {
-        if let price = entry.cryptoItem.ticker?.price {
-            Text("\(entry.cryptoItem.crypto.symbol) \(AppService.shared.formatFiat(price, entry.cryptoItem.currency.rawValue, true))")
-        } else {
-            Text(verbatim: "...")
-        }
-    }
-}
-
-struct TickerRectangularView: View {
-    var body: some View {}
 }
 
 struct TickerExtension: Widget {
@@ -136,8 +77,7 @@ struct TickerExtension: Widget {
         }
         .configurationDisplayName("Ticker")
         .description("Live price for selected crypto.")
-//        .supportedFamilies([.accessoryCorner, .accessoryCircular, .accessoryInline, .accessoryRectangular])
-        .supportedFamilies([.accessoryCorner, .accessoryCircular, .accessoryInline])
+        .supportedFamilies([.accessoryCorner, .accessoryCircular, .accessoryInline, .accessoryRectangular])
         .contentMarginsDisabled()
     }
 }
