@@ -73,6 +73,7 @@ class SettingsModel {
                 cryptos[index].ticker = ticker
                 cryptos[index].date = Date()
             }
+            WidgetCenter.shared.reloadTimelines(ofKind: "TickerExtension")
         } catch {}
     }
     

@@ -64,6 +64,9 @@ struct MainView: View {
                             .onChange(of: scrollToTopTrigger) {
                                 proxy.scrollTo("top", anchor: .top)
                             }
+                            .onOpenURL { url in
+                                handleIncomingURL(url, proxy)
+                            }
                         }
                     }
                 }
@@ -108,9 +111,6 @@ struct MainView: View {
                 }
             }
         }
-        .onOpenURL { url in
-            handleIncomingURL(url)
-        }
     }
     
     func delete(_ item: CryptoItem) {
@@ -125,12 +125,17 @@ struct MainView: View {
         selectedItem = item
     }
     
-    func handleIncomingURL(_ url: URL) {
+    func handleIncomingURL(_ url: URL, _ proxy: ScrollViewProxy) {
         guard let host = url.host else { return }
         path = NavigationPath()
+        let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
         switch host {
         case "portfolio":
             path.append(Route.portfolio)
+        case "main":
+            if let cryptoItemId = components?.queryItems?.first(where: { $0.name == "cryptoItemId" })?.value {
+                proxy.scrollTo(cryptoItemId + reloadTrigger.uuidString, anchor: .top)
+            }
         default:
             break
         }

@@ -7,6 +7,7 @@ actor ApiClient {
     
     private var cache: [String: CacheEntryObject] = [:]
     private let API_PRICE_URL: String = "https://price.coin.space/"
+    private let suiteName = "group.com.coinspace.shared"
     
     private var prices: [String: Double] = [:]
     
@@ -42,16 +43,17 @@ actor ApiClient {
             allTickers.append(contentsOf: tickers)
         }
         
-        let key = "prices:\(cryptoIds.joined(separator: ",")):\(fiat)"
-        let defaults = UserDefaults.standard
         var oldTickers: [TickerCodable] = []
-        if let data = defaults.data(forKey: key) {
-            if let decoded = try? JSONDecoder().decode([TickerCodable].self, from: data) {
-                oldTickers = decoded
+        if let defaults = UserDefaults(suiteName: self.suiteName) {
+            let key = "prices:\(cryptoIds.joined(separator: ",")):\(fiat)"
+            if let data = defaults.data(forKey: key) {
+                if let decoded = try? JSONDecoder().decode([TickerCodable].self, from: data) {
+                    oldTickers = decoded
+                }
             }
-        }
-        if let encoded = try? JSONEncoder().encode(allTickers) {
-            defaults.set(encoded, forKey: key)
+            if let encoded = try? JSONEncoder().encode(allTickers) {
+                defaults.set(encoded, forKey: key)
+            }
         }
         
         return cryptoIds.compactMap { cryptoId in

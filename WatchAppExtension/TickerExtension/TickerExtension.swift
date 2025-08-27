@@ -28,7 +28,6 @@ struct TickerProvider: AppIntentTimelineProvider {
         let now = Date()
         let entry = TickerTimelineEntry(date: now, cryptoItem: cryptoItem)
         let timeline = Timeline(entries: [entry], policy: .after(now.addingTimeInterval(300))) // 5 min
-        
         return timeline
     }
 
@@ -52,6 +51,10 @@ struct TickerExtensionEntryView: View {
         switch family {
         case .accessoryCorner:
             TickerCornerView(entry: entry)
+        case .accessoryCircular:
+            TickerCircularView(entry: entry)
+        case .accessoryInline:
+            TickerInlineView(entry: entry)
         default:
             Text("404")
         }
@@ -63,11 +66,11 @@ struct TickerCornerView: View {
     
     var body: some View {
         Text(entry.cryptoItem.crypto.symbol)
-            .font(.callout)
             .widgetCurvesContent()
             .widgetLabel {
                 if let price = entry.cryptoItem.ticker?.price {
                     Text(AppService.shared.formatFiat(price, entry.cryptoItem.currency.rawValue, true))
+                        .setPriceChangeColor(entry.cryptoItem)
                 } else {
                     Text(verbatim: "...")
                 }
@@ -76,11 +79,43 @@ struct TickerCornerView: View {
 }
 
 struct TickerCircularView: View {
-    var body: some View {}
+    let entry: TickerProvider.Entry
+    
+    var body: some View {
+        ZStack {
+            AccessoryWidgetBackground()
+            VStack(spacing: -6) {
+                Text(entry.cryptoItem.crypto.symbol)
+                    .setFontStyle(AppFonts.textXsBold)
+                    .minimumScaleFactor(0.9)
+                PriceText
+                    .setFontStyle(AppFonts.textXsBold)
+                    .minimumScaleFactor(0.7)
+            }.padding(.horizontal, 2)
+        }
+    }
+    
+    private var PriceText: Text {
+        let text: Text
+        if let priceChange = entry.cryptoItem.ticker?.price_change_1d {
+            text = Text(String(format: "%+.1f%%", priceChange))
+        } else {
+            text = Text(verbatim: "...")
+        }
+        return text.setPriceChangeColor(entry.cryptoItem)
+    }
 }
 
 struct TickerInlineView: View {
-    var body: some View {}
+    let entry: TickerProvider.Entry
+    
+    var body: some View {
+        if let price = entry.cryptoItem.ticker?.price {
+            Text("\(entry.cryptoItem.crypto.symbol) \(AppService.shared.formatFiat(price, entry.cryptoItem.currency.rawValue, true))")
+        } else {
+            Text(verbatim: "...")
+        }
+    }
 }
 
 struct TickerRectangularView: View {
@@ -97,18 +132,20 @@ struct TickerExtension: Widget {
             provider: TickerProvider()) { entry in
             TickerExtensionEntryView(entry: entry)
                     .containerBackground(.background.secondary, for: .widget)
-                    .widgetURL(URL(string: "watchapp://main"))
+                    .widgetURL(URL(string: "watchapp://main?cryptoItemId=\(entry.cryptoItem.id.uuidString)"))
         }
         .configurationDisplayName("Ticker")
         .description("Live price for selected crypto.")
 //        .supportedFamilies([.accessoryCorner, .accessoryCircular, .accessoryInline, .accessoryRectangular])
-        .supportedFamilies([.accessoryCorner, .accessoryRectangular])
+        .supportedFamilies([.accessoryCorner, .accessoryCircular, .accessoryInline])
         .contentMarginsDisabled()
     }
 }
 
-#Preview(as: .accessoryCorner) {
+#Preview(as: .accessoryInline) {
+//#Preview(as: .accessoryCircular) {
+//#Preview(as: .accessoryCorner) {
     TickerExtension()
 } timeline: {
-    TickerTimelineEntry(date: .now, cryptoItem: CryptoItem(crypto: .bitcoin))
+    TickerTimelineEntry(date: .now, cryptoItem: CryptoItem(crypto: .bitcoin, ticker: .bitcoin))
 }

@@ -29,6 +29,13 @@ extension Text {
             .frame(height: fontStyle.size * fontStyle.lineHeight)
             .lineLimit(1)
     }
+    func setPriceChangeColor(_ cryptoItem: CryptoItem) -> Text {
+        if let priceChange = cryptoItem.ticker?.price_change_1d {
+            self.foregroundColor(priceChange >= 0 ? AppColors.primary : AppColors.danger)
+        } else {
+            self.foregroundColor(AppColors.textColor)
+        }
+    }
 }
 
 struct AppColors {
