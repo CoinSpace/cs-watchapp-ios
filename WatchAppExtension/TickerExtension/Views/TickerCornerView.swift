@@ -9,7 +9,7 @@ struct TickerCornerView: View {
             .widgetLabel {
                 if let price = entry.cryptoItem.ticker?.price {
                     Text(AppService.shared.formatFiat(price, entry.cryptoItem.currency.rawValue, true))
-                        .setPriceChangeColor(entry.cryptoItem)
+                        .setPriceChangeColor(entry.cryptoItem.ticker?.price_change_1d)
                 } else {
                     Text(verbatim: "...")
                 }

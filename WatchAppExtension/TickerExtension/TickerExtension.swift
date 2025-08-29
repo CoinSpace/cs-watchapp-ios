@@ -11,20 +11,14 @@ struct TickerProvider: AppIntentTimelineProvider {
 
     func snapshot(for configuration: TickerConfiguration, in context: Context) async -> TickerTimelineEntry {
         print("snapshot")
-        var cryptoItem = configuration.getCryptoItem()
-        do {
-            cryptoItem.ticker = try await ApiClient.shared.prices([cryptoItem.crypto._id], cryptoItem.currency.rawValue).first
-        } catch {}
+        let cryptoItem = await configuration.getCryptoItem(context)
         let now = Date()
         return TickerTimelineEntry(date: now, cryptoItem: cryptoItem)
     }
 
     func timeline(for configuration: TickerConfiguration, in context: Context) async -> Timeline<TickerTimelineEntry> {
         print("timeline")
-        var cryptoItem = configuration.getCryptoItem()
-        do {
-            cryptoItem.ticker = try await ApiClient.shared.prices([cryptoItem.crypto._id], cryptoItem.currency.rawValue).first
-        } catch {}
+        let cryptoItem = await configuration.getCryptoItem(context)
         let now = Date()
         let entry = TickerTimelineEntry(date: now, cryptoItem: cryptoItem)
         let timeline = Timeline(entries: [entry], policy: .after(now.addingTimeInterval(300))) // 5 min
@@ -82,9 +76,7 @@ struct TickerExtension: Widget {
     }
 }
 
-#Preview(as: .accessoryInline) {
-//#Preview(as: .accessoryCircular) {
-//#Preview(as: .accessoryCorner) {
+#Preview(as: .accessoryRectangular) {
     TickerExtension()
 } timeline: {
     TickerTimelineEntry(date: .now, cryptoItem: CryptoItem(crypto: .bitcoin, ticker: .bitcoin))

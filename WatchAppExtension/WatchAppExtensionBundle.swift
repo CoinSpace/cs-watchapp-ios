@@ -13,6 +13,6 @@ struct WatchAppExtensionBundle: WidgetBundle {
     var body: some Widget {
         // Comment out all widget kinds except the one you want to debug
         TickerExtension()
-//        PortfolioExtension()
+        PortfolioExtension()
     }
 }

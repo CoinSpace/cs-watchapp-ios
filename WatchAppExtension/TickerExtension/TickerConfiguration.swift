@@ -16,7 +16,7 @@ public struct TickerConfiguration: WidgetConfigurationIntent {
     }
     public init() {}
     
-    func getCryptoItem() -> CryptoItem {
+    func getCryptoItem(_ context: TimelineProviderContext) async -> CryptoItem {
         var cryptoItem = CryptoItem(crypto: .bitcoin)
         if let defaults = UserDefaults(suiteName: Self.suiteName),
            let data = defaults.data(forKey: Self.userDefaultsKey),
@@ -24,6 +24,12 @@ public struct TickerConfiguration: WidgetConfigurationIntent {
             if let crypto = decoded.first(where: { $0.id.uuidString == self.cryptoItemId }) {
                 cryptoItem = crypto
             }
+        }
+        do {
+            cryptoItem.ticker = try await ApiClient.shared.prices([cryptoItem.crypto._id], cryptoItem.currency.rawValue).first
+        } catch {}
+        if context.family == .accessoryRectangular {
+            cryptoItem.crypto.image = await CryptoCodable.loadImage(cryptoItem.crypto)
         }
         return cryptoItem
     }

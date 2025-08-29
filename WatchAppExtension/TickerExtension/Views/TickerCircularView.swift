@@ -25,6 +25,6 @@ struct TickerCircularView: View {
         } else {
             text = Text(verbatim: "...")
         }
-        return text.setPriceChangeColor(entry.cryptoItem)
+        return text.setPriceChangeColor(entry.cryptoItem.ticker?.price_change_1d)
     }
 }
