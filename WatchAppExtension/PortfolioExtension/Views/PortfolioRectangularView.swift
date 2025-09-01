@@ -43,7 +43,7 @@ struct PortfolioRectangularView: View {
     private var PriceText: Text {
         let text: Text
         if let price = entry.portfolio.total?.price {
-            text = Text(AppService.shared.formatFiat(price, entry.portfolio.currency.rawValue, true))
+            text = Text(AppService.shared.formatFiat(price, entry.portfolio.currency.rawValue, false))
         } else {
             text = Text(verbatim: "...")
         }

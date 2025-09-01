@@ -5,7 +5,6 @@ actor ApiClient {
     
     static let shared = ApiClient()
     
-    private var cache: [String: CacheEntryObject] = [:]
     private let API_PRICE_URL: String = "https://price.coin.space/"
     private let suiteName = "group.com.coinspace.shared"
     
@@ -66,36 +65,47 @@ actor ApiClient {
     }
     
     func call<T: Codable>(_ url: String, ttl: TimeInterval = 0, completion: @escaping (T) -> T = { $0 }) async throws -> T {
-        let cacheKey: String = url
-        if let cached = cache[cacheKey] {
-            switch cached.entry {
-            case .ready(let value, let timestamp):
-                if Date().timeIntervalSince(timestamp) < ttl {
-                    return value as! T
-                } else {
-                    cache[cacheKey] = nil
+        let cacheKey: String = "cache:\(url)"
+        
+        if let defaults = UserDefaults(suiteName: self.suiteName),
+           let data = defaults.data(forKey: cacheKey),
+           let cachedEntry = try? JSONDecoder().decode(CacheEntryCodable.self, from: data) {
+            
+            if Date().timeIntervalSince(cachedEntry.timestamp) < ttl {
+                if let decoded = try? JSONDecoder().decode(T.self, from: cachedEntry.value) {
+                    return decoded
                 }
-            case .inProgress(let task):
-                return try await task.value as! T
+            } else {
+                defaults.removeObject(forKey: cacheKey)
             }
         }
-        let task = Task<Any, Error> {
+        
+        do {
             print("API call: \(url)")
             let (data, _) = try await URLSession.shared.data(from: URL(string: url)!)
             let result = try JSONDecoder().decode(T.self, from: data)
-            return completion(result)
-        }
-        cache[cacheKey] = CacheEntryObject(.inProgress(task))
-        do {
-            let value = try await task.value
-            cache[cacheKey] = CacheEntryObject(.ready(value as! T, Date()))
-            return value as! T
+            let final = completion(result)
+            
+            if let defaults = UserDefaults(suiteName: self.suiteName),
+               let encodedValue = try? JSONEncoder().encode(final) {
+                let entry = CacheEntryCodable(value: encodedValue, timestamp: Date())
+                if let encodedEntry = try? JSONEncoder().encode(entry) {
+                    defaults.set(encodedEntry, forKey: cacheKey)
+                }
+            }
+            return final
         } catch {
-            cache[cacheKey] = nil
-            print("API Error", error)
+            if let error = error as? URLError, error.code != .cancelled {
+                print("API Error", error)
+            }
             throw ApiError()
         }
     }
+}
+
+struct CacheEntryCodable: Codable {
+    let value: Data
+    let timestamp: Date
 }
 
 struct ApiError: Error {}
@@ -150,16 +160,4 @@ struct TickerCodable: Codable {
     static func bitcoins(size: Int) -> [TickerCodable] {
         Array(repeating: self.bitcoin, count: size)
     }
-}
-
-final class CacheEntryObject {
-    let entry: CacheEntry
-    init(_ entry: CacheEntry) {
-        self.entry = entry
-    }
-}
-
-enum CacheEntry {
-    case inProgress(Task<Any, Error>)
-    case ready(Any, Date)
 }

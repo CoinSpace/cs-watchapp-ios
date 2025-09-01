@@ -46,6 +46,7 @@ class PortfolioModel {
                 self.portfolio.total = totalTicker
                 self.portfolio.date = Date()
             }
+            WidgetCenter.shared.reloadTimelines(ofKind: "PortfolioExtension")
         } catch {}
     }
     
