@@ -4,8 +4,8 @@ import AppIntents
 
 struct PortfolioProvider: TimelineProvider {
     
-    private let suiteName = "group.com.coinspace.shared"
-    private let userDefaultsKey = "watchapp.portfolio"
+    private let suiteName = "group.com.coinspace.shared.watchos"
+    private let userDefaultsKey = "portfolio"
     
     func placeholder(in context: Context) -> PortfolioTimelineEntry {
         print("placeholder")

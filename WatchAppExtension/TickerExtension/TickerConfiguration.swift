@@ -3,8 +3,8 @@ import AppIntents
 
 public struct TickerConfiguration: WidgetConfigurationIntent {
     
-    private static let suiteName = "group.com.coinspace.shared"
-    private static let userDefaultsKey = "watchapp.cryptos"
+    private static let suiteName = "group.com.coinspace.shared.watchos"
+    private static let userDefaultsKey = "cryptos"
     
     public static var title: LocalizedStringResource { "Ticker configuration" }
     

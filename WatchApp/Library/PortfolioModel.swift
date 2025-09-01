@@ -9,8 +9,8 @@ class PortfolioModel {
     var portfolio: Portfolio = Portfolio()
     var isLoading: Bool = true
     
-    private let suiteName = "group.com.coinspace.shared"
-    private let userDefaultsKey = "watchapp.portfolio"
+    private let suiteName = "group.com.coinspace.shared.watchos"
+    private let userDefaultsKey = "portfolio"
     
     private init() {
         loadPortfolio()

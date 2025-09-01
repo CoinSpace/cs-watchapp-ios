@@ -9,8 +9,8 @@ class SettingsModel {
     var cryptos: [CryptoItem] = [CryptoItem(crypto: .bitcoin)]
     var isLoading: Bool = true
     
-    private let suiteName = "group.com.coinspace.shared"
-    private let userDefaultsKey = "watchapp.cryptos"
+    private let suiteName = "group.com.coinspace.shared.watchos"
+    private let userDefaultsKey = "cryptos"
     
     private init() {
         loadCryptos()

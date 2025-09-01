@@ -22,8 +22,8 @@ struct Portfolio: Identifiable, Codable {
         let balanceChangePercent = balance == 0.0 ? 0.0 : (balanceChange / balance)
         var totalTicker = TickerCodable(cryptoId: "portfolio", price: balance, price_change_1d: balanceChangePercent)
         
-        let suiteName = "group.com.coinspace.shared"
-        let key = "watchapp.portfolio.ticker:\(currency.rawValue)"
+        let suiteName = "group.com.coinspace.shared.watchos"
+        let key = "portfolio.ticker:\(currency.rawValue)"
         if let defaults = UserDefaults(suiteName: suiteName) {
             if let data = defaults.data(forKey: key) {
                 if let decoded = try? JSONDecoder().decode(TickerCodable.self, from: data) {

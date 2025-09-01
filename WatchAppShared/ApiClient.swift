@@ -6,7 +6,7 @@ actor ApiClient {
     static let shared = ApiClient()
     
     private let API_PRICE_URL: String = "https://price.coin.space/"
-    private let suiteName = "group.com.coinspace.shared"
+    private let suiteName = "group.com.coinspace.shared.watchos"
     
     private var prices: [String: Double] = [:]
     
