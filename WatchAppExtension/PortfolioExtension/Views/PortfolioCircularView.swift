@@ -14,7 +14,7 @@ struct PortfolioCircularView: View {
                     .widgetAccentable()
                     .frame(width: 16, height: 16)
                 if entry.portfolio.isLogged {
-                    PriceText
+                    PriceChangeText
                         .setFontStyle(AppFonts.textXsBold)
                         .minimumScaleFactor(0.7)
                 } else {
@@ -26,7 +26,7 @@ struct PortfolioCircularView: View {
         }
     }
     
-    private var PriceText: Text {
+    private var PriceChangeText: Text {
         let text: Text
         if let priceChange = entry.portfolio.total?.price_change_1d {
             text = Text(String(format: "%+.1f%%", priceChange))
