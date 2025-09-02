@@ -1,4 +1,4 @@
-target 'WatchAppExtension' do
+target 'WatchApp' do
   platform :watchos, '11.0'
   pod 'SDWebImage', '~> 5.21.1'
 end
