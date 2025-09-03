@@ -53,7 +53,7 @@ struct MainView: View {
                                             Label("Options", systemImage: "ellipsis")
                                         }
                                     }
-                                    .id(item.id.uuidString + reloadTrigger.uuidString)
+                                    .id(item.id + reloadTrigger.uuidString)
                                     .task {
                                         await SettingsModel.shared.loadLogo(for: item)
                                         await SettingsModel.shared.loadPrice(for: item)

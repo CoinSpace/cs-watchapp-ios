@@ -67,7 +67,7 @@ struct TickerExtension: Widget {
             provider: TickerProvider()) { entry in
             TickerExtensionEntryView(entry: entry)
                     .containerBackground(.background.secondary, for: .widget)
-                    .widgetURL(URL(string: "watchapp://main?cryptoItemId=\(entry.cryptoItem.id.uuidString)"))
+                    .widgetURL(URL(string: "watchapp://main?cryptoItemId=\(entry.cryptoItem.id)"))
         }
         .configurationDisplayName("Ticker")
         .description("Live price for selected crypto.")

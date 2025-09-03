@@ -22,8 +22,6 @@ class SettingsModel {
                let data = defaults.data(forKey: userDefaultsKey),
                let decoded = try? JSONDecoder().decode([CryptoItem].self, from: data) {
                 self.cryptos = decoded
-            } else {
-                saveCryptos()
             }
             self.isLoading = false
         }

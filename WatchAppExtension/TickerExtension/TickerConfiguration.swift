@@ -21,7 +21,7 @@ public struct TickerConfiguration: WidgetConfigurationIntent {
         if let defaults = UserDefaults(suiteName: Self.suiteName),
            let data = defaults.data(forKey: Self.userDefaultsKey),
            let decoded = try? JSONDecoder().decode([CryptoItem].self, from: data) {
-            if let crypto = decoded.first(where: { $0.id.uuidString == self.cryptoItemId }) {
+            if let crypto = decoded.first(where: { $0.id == self.cryptoItemId }) {
                 cryptoItem = crypto
             }
         }
@@ -40,9 +40,12 @@ public struct TickerConfiguration: WidgetConfigurationIntent {
            let data = defaults.data(forKey: Self.userDefaultsKey),
            let decoded = try? JSONDecoder().decode([CryptoItem].self, from: data) {
             for cryptoItem in decoded {
-                let recommendation = AppIntentRecommendation(intent: self.init(cryptoItemId: cryptoItem.id.uuidString), description: cryptoItem.crypto.name)
+                let recommendation = AppIntentRecommendation(intent: self.init(cryptoItemId: cryptoItem.id), description: cryptoItem.crypto.name)
                 recommendations.append(recommendation)
             }
+        } else {
+            let recommendation = AppIntentRecommendation(intent: self.init(cryptoItemId: CryptoCodable.bitcoin.asset), description: CryptoCodable.bitcoin.name)
+            recommendations.append(recommendation)
         }
         return recommendations
     }

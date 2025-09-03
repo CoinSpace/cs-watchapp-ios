@@ -1,7 +1,7 @@
 import Foundation
 
 struct Portfolio: Identifiable, Codable {
-    var id = UUID()
+    var id = "portfolio"
     var currency: Currency = .USD
     var total: TickerCodable?
     var cryptos: [PortfolioCryptoCodable] = []

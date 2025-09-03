@@ -29,7 +29,7 @@ struct PortfolioView: View {
                                     Label("Options", systemImage: "ellipsis")
                                 }
                             }
-                            .id(portfolio.id.uuidString + reloadTrigger.uuidString)
+                            .id(portfolio.id + reloadTrigger.uuidString)
                             .task {
                                 await PortfolioModel.shared.loadPrice()
                             }

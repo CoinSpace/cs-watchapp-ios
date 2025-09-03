@@ -22,8 +22,6 @@ class PortfolioModel {
                let data = defaults.data(forKey: userDefaultsKey),
                let decoded = try? JSONDecoder().decode(Portfolio.self, from: data) {
                 self.portfolio = decoded
-            } else {
-                savePortfolio()
             }
             // DEBUG
             // self.portfolio = Portfolio.defaultPortfolio
