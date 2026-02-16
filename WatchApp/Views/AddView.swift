@@ -4,7 +4,7 @@ struct AddView: View {
     @State private var search = SearchModel()
     @Environment(\.dismiss) private var dismiss
     
-    var onAdd: () -> Void = {}
+    var onAdd: (_ item: CryptoItem) -> Void = {item in }
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -26,9 +26,10 @@ struct AddView: View {
                         EmptyView().id("top")
                         ForEach(search.results, id: \._id) { result in
                             CryptoAddListItem(crypto: result) {
-                                SettingsModel.shared.addCrypto(CryptoItem(crypto: result))
+                                let cryptoItem = CryptoItem(crypto: result)
+                                SettingsModel.shared.addCrypto(cryptoItem)
                                 dismiss()
-                                onAdd()
+                                onAdd(cryptoItem)
                             }.task {
                                 await search.loadLogo(for: result)
                             }

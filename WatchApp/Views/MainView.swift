@@ -9,8 +9,8 @@ enum Route: Hashable {
 struct MainView: View {
     @State private var path = NavigationPath()
     @State private var selectedItem: CryptoItem?
-    @State private var scrollToTopTrigger = UUID()
     @State private var reloadTrigger = UUID()
+    @State private var scrollProxy: ScrollViewProxy? = nil
     
     private let delegate: WCSessionDelegate
     private var session: WCSession
@@ -61,8 +61,8 @@ struct MainView: View {
                                 }
                                 .onMove(perform: move)
                             }
-                            .onChange(of: scrollToTopTrigger) {
-                                proxy.scrollTo("top", anchor: .top)
+                            .onAppear {
+                                scrollProxy = proxy
                             }
                             .onOpenURL { url in
                                 handleIncomingURL(url, proxy)
@@ -105,8 +105,10 @@ struct MainView: View {
                 case .portfolio:
                     PortfolioView()
                 case .add:
-                    AddView(onAdd: {
-                        scrollToTopTrigger = UUID()
+                    AddView(onAdd: { cryptoItem in
+                        Task { @MainActor in
+                            scrollProxy?.scrollTo(cryptoItem.id + reloadTrigger.uuidString, anchor: .top)
+                        }
                     })
                 }
             }
