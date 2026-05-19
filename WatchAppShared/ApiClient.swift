@@ -140,7 +140,7 @@ struct CryptoCodable: Codable, CryptoDisplayable {
     
     static func loadImage(_ item: CryptoCodable) async -> UIImage? {
         let version = Bundle.main.infoDictionary!["CFBundleShortVersionString"]!
-        return await AppService.shared.downloadImage(url: "https://price.coin.space/logo/\(item.logo!)?ver=\(version)")
+        return await AppService.shared.downloadImage(url: "https://price.coin.space/logo-dark/\(item.logo!)?ver=\(version)")
     }
 }
 
